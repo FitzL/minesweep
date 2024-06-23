@@ -22,99 +22,33 @@ tiles = { # tiles used for display
 
 # clear neighbours, for cascading discovery
 def clear_neighbours(table, x, y):
-	try:
-		if (x < 1):
-			raise
-		if (y < 1):
-			raise
-		table[x - 1][y - 1]	 = False
-	except:
-		pass
-	try:
-		if (y == 0):
-			raise
-		table[x][y - 1] = False
-	except:
-		pass
-	try:
-		if (y == 0):
-			raise
-		table[x + 1][y - 1] = False
-	except:
-		pass
-	try:
-		if (x == 0):
-			raise
-		table[x - 1][y] = False	
-	except:
-		pass
-	try:
-		table[x + 1][y] = False
-	except:
-		pass
-	try:
-		if (x == 0):
-			raise
-		table[x - 1][y + 1] = False
-	except:
-		pass
-	try:
-		table[x][y + 1] = False
-	except:
-		pass
-	try:
-		table[x + 1][y + 1] = False
-	except:
-		pass
+	if (table[x][y]):
+		return table
+	else:
+		for i in range(-1,2):
+			for j in range(-1,2):
+				if (x + i < 0 or y + j < 0):
+					continue
+				else:	
+					try:
+						table[x + i][j + i] = False
+					except:
+						pass 
 	return table
 
 # find neighbouring bombs
 def neighbour(table, x, y):
 	count = 0
-	try:
-		if (x < 1):
-			raise
-		if (y < 1):
-			raise
-		count += table[x - 1][y - 1]
-	except:
-		pass
-	try:
-		if (y < 1):
-			raise
-		count += table[x][y - 1]
-	except:
-		pass
-	try:
-		if (y < 1):
-			raise
-		count += table[x + 1][y - 1] 
-	except:
-		pass
-	try:
-		if (x < 1):
-			raise
-		count += table[x - 1][y] 	
-	except:
-		pass
-	try:
-		count += table[x + 1][y]
-	except:
-		pass
-	try:
-		if (x < 1):
-			raise
-		count += table[x - 1][y + 1] 
-	except:
-		pass
-	try:
-		count += table[x][y + 1]
-	except:
-		pass
-	try:
-		count += table[x + 1][y + 1] 
-	except:
-		pass
+
+	for i in range(-1,2):
+		for j in range(-1,2):
+			if (x + i < 0 or y + j < 0):
+				continue
+			else:	
+				try:
+					count += 1 if table[x + i][y + j] else 0
+				except:
+					pass 
 	return count
 
 # display function
@@ -151,6 +85,7 @@ def main():
 	board = [] # gameboard
 	mask = [] # undiscovered gamefield
 
+	visible = False # If the board is visible or not (makes game unwinable)
 	alive = True # self explanatory
 
 	clear() # clear screen? I hope you didn't need to read this comment...
@@ -175,7 +110,7 @@ def main():
 	# board filling (random)
 	for i in range(size):
 		line = [] # board line, the generation is linewise
-		m_line = list(itertools.repeat(True, size)) # change to False if you want to see a clear board by default
+		m_line = list(itertools.repeat(not visible, size)) # change to False if you want to see a clear board by default
 		for j in range(size):
 			line.append(True if random.random() < difficulty else False) 
 		board.append(line)
@@ -249,13 +184,13 @@ def main():
 					else:
 						if (neighbour(board, i, j) == 0):
 							mask = clear_neighbours(mask, i, j)
-			for i in range(size):
-				for j in range(size):
-					if (mask[i][j]):
-						continue
-					else:
-						if (neighbour(board, i, j) == 0):
-							mask = clear_neighbours(mask, i, j)
+			# for i in range(1, size + 1):
+			# 	for j in range(1, size + 1):
+			# 		if (mask[size - i][size - j]):
+			# 			continue
+			# 		else:
+			# 			if (neighbour(board, i, j) == 0):
+			# 				mask = clear_neighbours(mask, size - i, size - j)
 
 def win():
 	print("Congratulations, YOU won!")
